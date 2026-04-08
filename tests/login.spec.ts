@@ -1,15 +1,3 @@
-/**
- * LOGIN PAGE TEST CASES
- *
- * LOGGING APPROACH:
- * We use test.step() to add logs. Each step shows up in:
- *   - Terminal output (when you run tests)
- *   - HTML Report (npx playwright show-report)
- *   - Trace Viewer (npx playwright show-trace)
- *
- * Credentials are read from .env file, NOT hardcoded here.
- */
-
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { LoginChoicePage } from '../pages/LoginChoicePage';
@@ -28,152 +16,152 @@ test.beforeEach(async ({ page }) => {
     });
 });
 
-// ============================================
-// GROUP 1: UI ELEMENTS VISIBILITY TESTS
-// ============================================
+// =========================================================================
+// UI TESTS — Verify that all elements are displayed correctly on the page
+// =========================================================================
 
-test.describe('Login Page - UI Elements', () => {
+test.describe('UI Tests', () => {
 
-    test('should display the Apycue logo', async () => {
-        await test.step('Verify Apycue logo is visible on the page', async () => {
+    // ========== TC_BO_001 =====================
+    // TC_NO_0001 = Verify that all login page elements (logo, heading, subtext, email, password, button, title) are displayed
+    // =================================
+    test('TC_NO_0001: Verify that all login page elements are displayed correctly', async ({ page }) => {
+        await test.step('Verify Apycue logo is visible', async () => {
             await expect(loginPage.getLogo()).toBeVisible();
         });
-    });
-
-    test('should display "Backoffice Login" heading', async () => {
-        await test.step('Verify "Backoffice Login" heading is visible', async () => {
+        await test.step('Verify Backoffice Login heading is visible', async () => {
             await expect(loginPage.getPageHeading()).toBeVisible();
         });
-    });
-
-    test('should display "Sign in to access your account" subtext', async () => {
         await test.step('Verify subtext "Sign in to access your account" is visible', async () => {
             await expect(loginPage.getPageSubtext()).toBeVisible();
         });
-    });
-
-    test('should display email input field', async () => {
         await test.step('Verify email input field is visible', async () => {
             await expect(loginPage.getEmailInput()).toBeVisible();
         });
-    });
-
-    test('should display password input field', async () => {
         await test.step('Verify password input field is visible', async () => {
             await expect(loginPage.getPasswordInput()).toBeVisible();
         });
-    });
-
-    test('should display Sign In button', async () => {
-        await test.step('Verify Sign In button is visible', async () => {
+        await test.step('Verify Sign In button is visible and enabled', async () => {
             await expect(loginPage.getSignInButton()).toBeVisible();
-        });
-        await test.step('Verify Sign In button is enabled (clickable)', async () => {
             await expect(loginPage.getSignInButton()).toBeEnabled();
         });
-    });
-
-    test('should have correct page title', async ({ page }) => {
         await test.step('Verify browser tab title contains "apycue"', async () => {
             await expect(page).toHaveTitle(/apycue/i);
         });
     });
-});
 
-// ============================================
-// GROUP 2: INPUT FIELD BEHAVIOR TESTS
-// ============================================
-
-test.describe('Login Page - Input Fields', () => {
-
-    test('email field should have correct placeholder', async () => {
-        await test.step('Verify email placeholder text is "Enter your email"', async () => {
+    // ========== TC_BO_001 =====================
+    // TC_NO_0002 = Verify that email and password fields have correct placeholder text and input types
+    // =================================
+    test('TC_NO_0002: Verify that email and password fields have correct placeholder text and input types', async () => {
+        await test.step('Verify email placeholder is "Enter your email"', async () => {
             await expect(loginPage.getEmailInput()).toHaveAttribute('placeholder', 'Enter your email');
         });
-    });
-
-    test('password field should have correct placeholder', async () => {
-        await test.step('Verify password placeholder text is "Enter your password"', async () => {
+        await test.step('Verify password placeholder is "Enter your password"', async () => {
             await expect(loginPage.getPasswordInput()).toHaveAttribute('placeholder', 'Enter your password');
         });
-    });
-
-    test('email field should have type "email"', async () => {
         await test.step('Verify email input type is "email"', async () => {
             await expect(loginPage.getEmailInput()).toHaveAttribute('type', 'email');
         });
     });
 
-    test('password field should have type "password"', async () => {
-        await test.step('Verify password input type is "password" (text is hidden)', async () => {
-            await expect(loginPage.getPasswordInput()).toHaveAttribute('type', 'password');
+    // ========== TC_BO_002 =====================
+    // TC_NO_0003 = Verify that all login-choice page elements are displayed after successful login
+    // =================================
+    test('TC_NO_0003: Verify that all login-choice page elements are displayed after successful login', async () => {
+        await test.step('Login with valid credentials', async () => {
+            await loginPage.login(TEST_EMAIL, TEST_PASSWORD);
+        });
+        await test.step('Verify "Login Successful" toast appears', async () => {
+            await expect(loginChoicePage.getSuccessToast()).toBeVisible();
+        });
+        await test.step('Verify "Welcome back!" message appears', async () => {
+            await expect(loginChoicePage.getWelcomeMessage()).toBeVisible();
+        });
+        await test.step('Verify "Select Login Type" heading is visible', async () => {
+            await expect(loginChoicePage.getPageHeading()).toBeVisible();
+        });
+        await test.step('Verify "Choose where you want to login" subtext is visible', async () => {
+            await expect(loginChoicePage.getPageSubtext()).toBeVisible();
+        });
+        await test.step('Verify "Hotel Login" button is visible', async () => {
+            await expect(loginChoicePage.getHotelLoginButton()).toBeVisible();
+        });
+        await test.step('Verify "Back Office Login" button is visible', async () => {
+            await expect(loginChoicePage.getBackOfficeButton()).toBeVisible();
+        });
+        await test.step('Verify "Logout" button is visible', async () => {
+            await expect(loginChoicePage.getLogoutButton()).toBeVisible();
         });
     });
 
-    test('should allow typing in email field', async () => {
-        await test.step('Type "test@example.com" in email field', async () => {
-            await loginPage.fillEmail('test@example.com');
-        });
-        await test.step('Verify email field contains "test@example.com"', async () => {
-            await expect(loginPage.getEmailInput()).toHaveValue('test@example.com');
-        });
-    });
-
-    test('should allow typing in password field', async () => {
-        await test.step('Type "TestPassword123" in password field', async () => {
-            await loginPage.fillPassword('TestPassword123');
-        });
-        await test.step('Verify password field contains "TestPassword123"', async () => {
-            await expect(loginPage.getPasswordInput()).toHaveValue('TestPassword123');
-        });
-    });
-
-    test('password toggle should change password field to text type', async () => {
-        await test.step('Type "MySecret" in password field', async () => {
-            await loginPage.fillPassword('MySecret');
-        });
-        await test.step('Verify password is hidden (type="password")', async () => {
-            await expect(loginPage.getPasswordInput()).toHaveAttribute('type', 'password');
-        });
-        await test.step('Click the eye icon to toggle password visibility', async () => {
-            await loginPage.togglePasswordVisibility();
-        });
-        await test.step('Verify password is now visible (type="text")', async () => {
-            await expect(loginPage.getPasswordInput()).toHaveAttribute('type', 'text');
+    // =================================
+    // TC_NO_0004 = Verify that the login page loads with the correct URL
+    // =================================
+    test('TC_NO_0004: Verify that the login page loads with the correct URL', async ({ page }) => {
+        await test.step('Verify URL contains /backoffice/login', async () => {
+            await expect(page).toHaveURL(/\/backoffice\/login/);
         });
     });
 });
 
-// ============================================
-// GROUP 3: VALIDATION TESTS (Negative Scenarios)
-// ============================================
+// =========================================================================
+// FUNCTIONAL TESTS — Verify that login features and validations work correctly
+// =========================================================================
 
-test.describe('Login Page - Validation', () => {
+test.describe('Functional Tests', () => {
 
-    test('should not login with empty email and empty password', async ({ page }) => {
-        await test.step('Click Sign In without entering any credentials', async () => {
-            await loginPage.clickSignIn();
+    // =================================
+    // TC_NO_0005 = Verify that the user is able to type text in the email and password fields
+    // =================================
+    test('TC_NO_0005: Verify that the user is able to type text in the email and password fields', async () => {
+        await test.step('Type "test@example.com" in email field', async () => {
+            await loginPage.fillEmail('test@example.com');
         });
-        await test.step('Verify user stays on login page (URL contains /login)', async () => {
-            await expect(page).toHaveURL(/\/login/);
+        await test.step('Verify typed email is displayed in the field', async () => {
+            await expect(loginPage.getEmailInput()).toHaveValue('test@example.com');
+        });
+        await test.step('Type "TestPassword123" in password field', async () => {
+            await loginPage.fillPassword('TestPassword123');
+        });
+        await test.step('Verify typed password is stored in the field', async () => {
+            await expect(loginPage.getPasswordInput()).toHaveValue('TestPassword123');
         });
     });
 
-    test('should not login with valid email and empty password', async ({ page }) => {
-        await test.step(`Enter valid email: ${TEST_EMAIL}`, async () => {
+    // ========== TC_BO_005 =====================
+    // TC_NO_0006 = Verify that the password field is masked and characters appear as dots
+    // =================================
+    test('TC_NO_0006: Verify that the password field is masked and characters appear as dots', async () => {
+        await test.step('Verify password input type is "password"', async () => {
+            await expect(loginPage.getPasswordInput()).toHaveAttribute('type', 'password');
+        });
+    });
+
+    // ========== TC_BO_009 =====================
+    // TC_NO_0007 = Verify that clicking the eye icon toggles password between hidden and visible
+    // =================================
+    test('TC_NO_0007: Verify that clicking the eye icon toggles password between hidden and visible', async () => {
+        await test.step('Type password in the password field', async () => {
+            await loginPage.fillPassword('MySecret');
+        });
+        await test.step('Verify password is hidden by default', async () => {
+            await expect(loginPage.getPasswordInput()).toHaveAttribute('type', 'password');
+        });
+        await test.step('Click the eye icon to show password', async () => {
+            await loginPage.togglePasswordVisibility();
+        });
+        await test.step('Verify password is now visible as plain text', async () => {
+            await expect(loginPage.getPasswordInput()).toHaveAttribute('type', 'text');
+        });
+    });
+
+    // ========== TC_BO_002 =====================
+    // TC_NO_0008 = Verify that user is redirected to login-choice page after valid login
+    // =================================
+    test('TC_NO_0008: Verify that user is redirected to login-choice page after valid login', async ({ page }) => {
+        await test.step('Enter valid email', async () => {
             await loginPage.fillEmail(TEST_EMAIL);
-        });
-        await test.step('Leave password empty and click Sign In', async () => {
-            await loginPage.clickSignIn();
-        });
-        await test.step('Verify user stays on login page', async () => {
-            await expect(page).toHaveURL(/\/login/);
-        });
-    });
-
-    test('should not login with empty email and valid password', async ({ page }) => {
-        await test.step('Leave email empty', async () => {
-            // Email is intentionally left empty
         });
         await test.step('Enter valid password', async () => {
             await loginPage.fillPassword(TEST_PASSWORD);
@@ -181,28 +169,34 @@ test.describe('Login Page - Validation', () => {
         await test.step('Click Sign In', async () => {
             await loginPage.clickSignIn();
         });
-        await test.step('Verify user stays on login page', async () => {
-            await expect(page).toHaveURL(/\/login/);
+        await test.step('Verify URL changes to /backoffice/login-choice', async () => {
+            await expect(page).toHaveURL(/\/backoffice\/login-choice/);
         });
     });
 
-    test('should not login with valid email and invalid password', async ({ page }) => {
-        await test.step(`Enter valid email: ${TEST_EMAIL}`, async () => {
+    // ========== TC_BO_003 =====================
+    // TC_NO_0009 = Verify that login fails when valid email and incorrect password are entered
+    // =================================
+    test('TC_NO_0009: Verify that login fails when valid email and incorrect password are entered', async ({ page }) => {
+        await test.step('Enter valid email', async () => {
             await loginPage.fillEmail(TEST_EMAIL);
         });
-        await test.step('Enter invalid password: "WrongPassword@123"', async () => {
+        await test.step('Enter incorrect password', async () => {
             await loginPage.fillPassword('WrongPassword@123');
         });
         await test.step('Click Sign In', async () => {
             await loginPage.clickSignIn();
         });
-        await test.step('Verify login fails — user stays on login page', async () => {
+        await test.step('Verify user remains on login page', async () => {
             await expect(page).toHaveURL(/\/login/);
         });
     });
 
-    test('should not login with invalid email and valid password', async ({ page }) => {
-        await test.step('Enter invalid email: "fakeemail@invalid.com"', async () => {
+    // ========== TC_BO_004 =====================
+    // TC_NO_0010 = Verify that login fails when an unregistered email is entered
+    // =================================
+    test('TC_NO_0010: Verify that login fails when an unregistered email is entered', async ({ page }) => {
+        await test.step('Enter unregistered email', async () => {
             await loginPage.fillEmail('fakeemail@invalid.com');
         });
         await test.step('Enter valid password', async () => {
@@ -211,136 +205,148 @@ test.describe('Login Page - Validation', () => {
         await test.step('Click Sign In', async () => {
             await loginPage.clickSignIn();
         });
-        await test.step('Verify login fails — user stays on login page', async () => {
+        await test.step('Verify user remains on login page', async () => {
             await expect(page).toHaveURL(/\/login/);
         });
     });
 
-    test('should not login with invalid email and invalid password', async ({ page }) => {
-        await test.step('Enter invalid email: "wrong@email.com"', async () => {
+    // ========== TC_BO_006 =====================
+    // TC_NO_0011 = Verify that the password field is case-sensitive and rejects wrong case
+    // =================================
+    test('TC_NO_0011: Verify that the password field is case-sensitive and rejects wrong case', async ({ page }) => {
+        await test.step('Enter valid email', async () => {
+            await loginPage.fillEmail(TEST_EMAIL);
+        });
+        await test.step('Enter password in uppercase', async () => {
+            await loginPage.fillPassword(TEST_PASSWORD.toUpperCase());
+        });
+        await test.step('Click Sign In', async () => {
+            await loginPage.clickSignIn();
+        });
+        await test.step('Verify login fails due to case mismatch', async () => {
+            await expect(page).toHaveURL(/\/login/);
+        });
+    });
+
+    // =================================
+    // TC_NO_0012 = Verify that login fails when both email and password are invalid
+    // =================================
+    test('TC_NO_0012: Verify that login fails when both email and password are invalid', async ({ page }) => {
+        await test.step('Enter invalid email', async () => {
             await loginPage.fillEmail('wrong@email.com');
         });
-        await test.step('Enter invalid password: "WrongPassword123"', async () => {
+        await test.step('Enter invalid password', async () => {
             await loginPage.fillPassword('WrongPassword123');
         });
         await test.step('Click Sign In', async () => {
             await loginPage.clickSignIn();
         });
-        await test.step('Verify login fails — user stays on login page', async () => {
+        await test.step('Verify user remains on login page', async () => {
             await expect(page).toHaveURL(/\/login/);
         });
     });
 
-    test('should not login with invalid email format', async ({ page }) => {
-        await test.step('Enter invalid email format: "not-an-email" (missing @)', async () => {
-            await loginPage.fillEmail('not-an-email');
-        });
-        await test.step('Enter valid password', async () => {
-            await loginPage.fillPassword(TEST_PASSWORD);
-        });
-        await test.step('Click Sign In', async () => {
+    // ========== TC_BO_007 =====================
+    // TC_NO_0013 = Verify that login is blocked when mandatory fields are left empty
+    // =================================
+    test('TC_NO_0013: Verify that login is blocked when mandatory fields are left empty', async ({ page }) => {
+        await test.step('Click Sign In with both fields empty', async () => {
             await loginPage.clickSignIn();
         });
-        await test.step('Verify browser blocks submission — user stays on login page', async () => {
+        await test.step('Verify user remains on login page — both fields empty', async () => {
             await expect(page).toHaveURL(/\/login/);
         });
-    });
-});
 
-// ============================================
-// GROUP 4: SUCCESSFUL LOGIN TESTS (Positive Scenarios)
-// ============================================
+        await test.step('Reload login page for next scenario', async () => {
+            await loginPage.goto();
+        });
 
-test.describe('Login Page - Successful Login', () => {
-
-    test('should login with valid credentials and redirect to login-choice page', async ({ page }) => {
-        await test.step(`Enter valid email: ${TEST_EMAIL}`, async () => {
+        await test.step('Enter valid email only', async () => {
             await loginPage.fillEmail(TEST_EMAIL);
         });
-        await test.step('Enter valid password', async () => {
-            await loginPage.fillPassword(TEST_PASSWORD);
-        });
-        await test.step('Click Sign In button', async () => {
+        await test.step('Click Sign In without entering password', async () => {
             await loginPage.clickSignIn();
         });
-        await test.step('Verify URL redirects to /backoffice/login-choice', async () => {
-            await expect(page).toHaveURL(/\/backoffice\/login-choice/);
+        await test.step('Verify user remains on login page — password empty', async () => {
+            await expect(page).toHaveURL(/\/login/);
+        });
+
+        await test.step('Reload login page for next scenario', async () => {
+            await loginPage.goto();
+        });
+
+        await test.step('Enter valid password only', async () => {
+            await loginPage.fillPassword(TEST_PASSWORD);
+        });
+        await test.step('Click Sign In without entering email', async () => {
+            await loginPage.clickSignIn();
+        });
+        await test.step('Verify user remains on login page — email empty', async () => {
+            await expect(page).toHaveURL(/\/login/);
         });
     });
 
-    test('should show "Login Successful" toast message after login', async () => {
-        await test.step('Login with valid credentials', async () => {
-            await loginPage.login(TEST_EMAIL, TEST_PASSWORD);
-        });
-        await test.step('Verify "Login Successful" toast notification appears', async () => {
-            await expect(loginChoicePage.getSuccessToast()).toBeVisible();
-        });
-    });
+    // ========== TC_BO_008 =====================
+    // TC_NO_0014 = Verify that login is blocked when email format is invalid
+    // =================================
+    test('TC_NO_0014: Verify that login is blocked when email format is invalid', async ({ page }) => {
+        const invalidEmails = [
+            { value: 'notanemail', reason: 'no @ symbol' },
+            { value: 'test@', reason: 'missing domain' },
+            { value: '@domain.com', reason: 'missing username' },
+            { value: 'test@domain', reason: 'missing TLD' },
+        ];
 
-    test('should show "Welcome back!" message after login', async () => {
-        await test.step('Login with valid credentials', async () => {
-            await loginPage.login(TEST_EMAIL, TEST_PASSWORD);
-        });
-        await test.step('Verify "Welcome back!" toast description appears', async () => {
-            await expect(loginChoicePage.getWelcomeMessage()).toBeVisible();
-        });
-    });
-
-    test('should display "Select Login Type" heading after login', async () => {
-        await test.step('Login with valid credentials', async () => {
-            await loginPage.login(TEST_EMAIL, TEST_PASSWORD);
-        });
-        await test.step('Verify "Select Login Type" heading is visible on redirected page', async () => {
-            await expect(loginChoicePage.getPageHeading()).toBeVisible();
-        });
-    });
-
-    test('should display "Choose where you want to login" subtext after login', async () => {
-        await test.step('Login with valid credentials', async () => {
-            await loginPage.login(TEST_EMAIL, TEST_PASSWORD);
-        });
-        await test.step('Verify "Choose where you want to login" subtext is visible', async () => {
-            await expect(loginChoicePage.getPageSubtext()).toBeVisible();
-        });
-    });
-
-    test('should display "Hotel Login" button after login', async () => {
-        await test.step('Login with valid credentials', async () => {
-            await loginPage.login(TEST_EMAIL, TEST_PASSWORD);
-        });
-        await test.step('Verify "Hotel Login" button is visible on login-choice page', async () => {
-            await expect(loginChoicePage.getHotelLoginButton()).toBeVisible();
-        });
-    });
-
-    test('should display "Back Office Login" button after login', async () => {
-        await test.step('Login with valid credentials', async () => {
-            await loginPage.login(TEST_EMAIL, TEST_PASSWORD);
-        });
-        await test.step('Verify "Back Office Login" button is visible on login-choice page', async () => {
-            await expect(loginChoicePage.getBackOfficeButton()).toBeVisible();
-        });
-    });
-
-    test('should display "Logout" button after login', async () => {
-        await test.step('Login with valid credentials', async () => {
-            await loginPage.login(TEST_EMAIL, TEST_PASSWORD);
-        });
-        await test.step('Verify "Logout" button is visible on login-choice page', async () => {
-            await expect(loginChoicePage.getLogoutButton()).toBeVisible();
-        });
+        for (const email of invalidEmails) {
+            await test.step(`Enter invalid email: "${email.value}" (${email.reason})`, async () => {
+                await loginPage.goto();
+                await loginPage.fillEmail(email.value);
+                await loginPage.fillPassword(TEST_PASSWORD);
+                await loginPage.clickSignIn();
+            });
+            await test.step(`Verify user remains on login page for "${email.value}"`, async () => {
+                await expect(page).toHaveURL(/\/login/);
+            });
+        }
     });
 });
 
-// ============================================
-// GROUP 5: NAVIGATION TESTS
-// ============================================
+// =========================================================================
+// SECURITY TESTS — Verify URL bypass protection and session management
+// =========================================================================
 
-test.describe('Login Page - Navigation', () => {
+test.describe('Security Tests', () => {
 
-    test('should load the login page with correct URL', async ({ page }) => {
-        await test.step('Verify current URL contains /backoffice/login', async () => {
-            await expect(page).toHaveURL(/\/backoffice\/login/);
+    // ========== TC_BO_010 =====================
+    // TC_NO_0015 = Verify that user is redirected to login page when accessing login-choice URL directly without session
+    // =================================
+    test('TC_NO_0015: Verify that user is redirected to login page when accessing login-choice URL directly without session', async ({ page }) => {
+        await test.step('Open login-choice page directly without logging in', async () => {
+            await page.goto('/backoffice/login-choice');
+        });
+        await test.step('Verify user is redirected to login page', async () => {
+            await expect(page).toHaveURL(/\/login/);
+        });
+    });
+
+    // ========== TC_BO_011 =====================
+    // TC_NO_0016 = Verify that user session is maintained after clicking browser back and forward buttons
+    // =================================
+    test('TC_NO_0016: Verify that user session is maintained after clicking browser back and forward buttons', async ({ page }) => {
+        await test.step('Login with valid credentials', async () => {
+            await loginPage.login(TEST_EMAIL, TEST_PASSWORD);
+        });
+        await test.step('Verify user is on login-choice page', async () => {
+            await expect(page).toHaveURL(/\/backoffice\/login-choice/);
+        });
+        await test.step('Click browser back button', async () => {
+            await page.goBack();
+        });
+        await test.step('Click browser forward button', async () => {
+            await page.goForward();
+        });
+        await test.step('Verify user is still on login-choice page', async () => {
+            await expect(page).toHaveURL(/\/backoffice\/login-choice/);
         });
     });
 });
