@@ -32,6 +32,13 @@ export class LoginPage {
     private pageHeading: Locator;      // The "Backoffice Login" title text
     private pageSubtext: Locator;      // The "Sign in to access your account" text
     private logo: Locator;             // The Apycue logo image
+    private emailLabel: Locator;       // Label for email input
+    private passwordLabel: Locator;    // Label for password input
+    private emailIcon: Locator;        // "mail" icon inside email field
+    private lockIcon: Locator;         // "lock" icon inside password field
+    private visibilityIcon: Locator;   // "visibility" icon inside password field
+    private loginCard: Locator;        // Card wrapping login form
+    private pageGradient: Locator;     // Full page gradient container
 
     /**
      * CONSTRUCTOR — Runs automatically when you write: new LoginPage(page)
@@ -60,6 +67,13 @@ export class LoginPage {
 
         // Strategy 5: By Alt Text → page.getByAltText('alt text')
         this.logo = page.getByAltText('Apycue Logo');
+        this.emailLabel = page.locator('label[for="email"]');
+        this.passwordLabel = page.locator('label[for="password"]');
+        this.emailIcon = page.locator('span.material-symbols-outlined', { hasText: /^mail$/ }).first();
+        this.lockIcon = page.locator('span.material-symbols-outlined', { hasText: /^lock$/ }).first();
+        this.visibilityIcon = page.locator('span.material-symbols-outlined', { hasText: /^visibility$/ }).first();
+        this.loginCard = page.locator('div.rounded-lg.border.bg-card.text-card-foreground.shadow-sm.p-6');
+        this.pageGradient = page.locator('div.min-h-screen.w-full.bg-gradient-primary').first();
     }
 
     // =============================================
@@ -135,5 +149,33 @@ export class LoginPage {
 
     getLogo() {
         return this.logo;
+    }
+
+    getEmailLabel() {
+        return this.emailLabel;
+    }
+
+    getPasswordLabel() {
+        return this.passwordLabel;
+    }
+
+    getEmailIcon() {
+        return this.emailIcon;
+    }
+
+    getLockIcon() {
+        return this.lockIcon;
+    }
+
+    getVisibilityIcon() {
+        return this.visibilityIcon;
+    }
+
+    getLoginCard() {
+        return this.loginCard;
+    }
+
+    getPageGradient() {
+        return this.pageGradient;
     }
 }

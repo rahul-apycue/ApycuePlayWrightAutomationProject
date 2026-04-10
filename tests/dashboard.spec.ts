@@ -8,6 +8,8 @@ const TEST_PASSWORD = process.env.LOGIN_PASSWORD!;
 const RESTRICTED_EMAIL = process.env.RESTRICTED_USER_EMAIL!;
 const RESTRICTED_PASSWORD = process.env.RESTRICTED_USER_PASSWORD!;
 
+test.describe('Dashboard Page', () => {
+
 let loginPage: LoginPage;
 let loginChoicePage: LoginChoicePage;
 let dashboardPage: DashboardPage;
@@ -26,6 +28,7 @@ test.describe('Dashboard - UI Tests', () => {
 
     // ========== TC_DB_001 =====================
     // TC_NO_0048 = Verify that admin user can see all sidebar menu items on the Dashboard
+    // Priority   = High
     // =================================
     test('TC_NO_0048: Verify that admin user can see all sidebar menu items on the Dashboard', async ({ page }) => {
         await test.step('Login as admin user', async () => {
@@ -67,6 +70,7 @@ test.describe('Dashboard - UI Tests', () => {
 
     // ========== TC_DB_002 =====================
     // TC_NO_0049 = Verify that restricted user only sees permitted menu items on the Dashboard
+    // Priority   = High
     // =================================
     test('TC_NO_0049: Verify that restricted user only sees permitted menu items on the Dashboard', async ({ page }) => {
         await test.step('Login as restricted user', async () => {
@@ -108,6 +112,7 @@ test.describe('Dashboard - UI Tests', () => {
 
     // ========== TC_DB_008 =====================
     // TC_NO_0050 = Verify that the welcome message displays the correct user name
+    // Priority   = Medium
     // =================================
     test('TC_NO_0050: Verify that the welcome message displays the correct user name', async ({ page }) => {
         await test.step('Login as admin user', async () => {
@@ -146,6 +151,7 @@ test.describe('Dashboard - Functional Tests', () => {
 
     // ========== TC_DB_003 =====================
     // TC_NO_0051 = Verify that clicking each sidebar menu item redirects to the correct page
+    // Priority   = High
     // =================================
     test('TC_NO_0051: Verify that clicking "User Management" menu redirects to /backoffice/users', async ({ page }) => {
         await test.step('Click "User Management" menu item', async () => {
@@ -212,6 +218,7 @@ test.describe('Dashboard - Functional Tests', () => {
 
     // ========== TC_DB_007 =====================
     // TC_NO_0052 = Verify that browser back/forward buttons work correctly and user remains logged in
+    // Priority   = Medium
     // =================================
     test('TC_NO_0052: Verify that browser back/forward buttons work correctly on the Dashboard', async ({ page }) => {
         await test.step('Click "User Management" to navigate away from dashboard', async () => {
@@ -243,6 +250,7 @@ test.describe('Dashboard - Security Tests', () => {
 
     // ========== TC_DB_004 =====================
     // TC_NO_0053 = Verify that restricted user cannot access admin-only pages via direct URL
+    // Priority   = Critical
     // =================================
     test('TC_NO_0053: Verify that restricted user cannot access admin-only pages via direct URL', async ({ page }) => {
         await test.step('Login as restricted user', async () => {
@@ -275,6 +283,7 @@ test.describe('Dashboard - Security Tests', () => {
 
     // ========== TC_DB_005 =====================
     // TC_NO_0054 = Verify that logging out in one tab redirects other tabs to Login page
+    // Priority   = Critical
     // =================================
     test('TC_NO_0054: Verify that logging out in one tab redirects other tabs to Login page', async ({ context, page }) => {
         await test.step('Login as admin in Tab 1', async () => {
@@ -313,4 +322,6 @@ test.describe('Dashboard - Security Tests', () => {
 
         await page2.close();
     });
+});
+
 });

@@ -27,7 +27,7 @@ export class DashboardPage {
     constructor(page: Page) {
         this.page = page;
 
-        this.welcomeHeading = page.getByRole('heading', { name: 'Welcome back, Backoffice!' });
+        this.welcomeHeading = page.getByRole('heading', { name: /Welcome back/i });
         this.dashboardSubtext = page.getByText('Backoffice Administration Dashboard');
         this.backButton = page.locator('button:has(span:text("arrow_back"))');
         this.profileButton = page.locator('button[data-slot="hover-card-trigger"]');

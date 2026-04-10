@@ -3,7 +3,22 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "test:chrome": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:headed": "playwright test --headed --project=chromium",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug --project=chromium",
+    "report": "playwright show-report",
+    "sheet:setup": "node scripts/addAllSheetColumn.js",
+    "sheet:sync": "node scripts/syncSheet.js",
+    "sheet:highlight": "node scripts/highlightAutomated.js",
+    "sheet:results": "node scripts/updateResults.js",
+    "sheet:all": "node scripts/syncSheet.js && node scripts/highlightAutomated.js",
+    "test:and:sync": "playwright test --project=chromium && node scripts/updateResults.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -12,5 +27,8 @@
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.5.2",
     "dotenv": "^17.4.1"
+  },
+  "dependencies": {
+    "googleapis": "^171.4.0"
   }
 }

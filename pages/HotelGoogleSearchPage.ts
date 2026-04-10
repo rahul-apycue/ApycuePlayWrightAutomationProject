@@ -21,7 +21,7 @@ export class HotelGoogleSearchPage {
         this.searchButton = page.getByRole('button', { name: 'Search' });
         this.backToTenantButton = page.getByRole('button', { name: 'Back to Tenant Selection' });
         this.tenantBadge = page.locator('.rounded-full').filter({ hasText: 'Tenant:' });
-        this.skipCreateManuallyButton = page.getByRole('button', { name: 'Skip & Create Manually' });
+        this.skipCreateManuallyButton = page.getByRole('button', { name: /Skip\s*&\s*Create Manually|Create Hotel Manually/i });
     }
 
     async searchHotel(query: string) {

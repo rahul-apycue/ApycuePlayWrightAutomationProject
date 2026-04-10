@@ -5,8 +5,8 @@
  * It reads the BASE_URL from .env file so you don't hardcode URLs.
  *
  * COMPARISON WITH SELENIUM:
- * Selenium  → config.properties + WebDriverManager
- * Playwright → .env + playwright.config.ts (this file does both jobs)
+ * Selenium  → config.properties + WebDriverManager + TestNG.xml
+ * Playwright → .env + playwright.config.ts (this file does all three jobs)
  */
 
 import { defineConfig, devices } from '@playwright/test';
@@ -17,64 +17,112 @@ import path from 'path';
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
-  // Where to find test files
-  testDir: './tests',
 
-  // Run tests in parallel for speed
-  fullyParallel: true,
+    // ==================== TEST DISCOVERY ====================
+    // Where to find test files
+    testDir: './tests',
 
-  // Fail CI build if you accidentally left test.only in code
-  forbidOnly: !!process.env.CI,
+    // Run tests in parallel for speed
+    fullyParallel: true,
 
-  // Retry failed tests on CI (0 retries locally)
-  retries: process.env.CI ? 2 : 0,
+    // Fail CI build if you accidentally left test.only in code
+    forbidOnly: !!process.env.CI,
 
-  // Number of parallel workers
-  workers: process.env.CI ? 1 : undefined,
+    // ==================== RETRY SETTINGS ====================
+    // Retry failed tests on CI (0 retries locally for fast feedback)
+    // SELENIUM EQUIVALENT: @Retry annotation in TestNG
+    retries: process.env.CI ? 2 : 0,
 
-  // Generate HTML report after test run
-  reporter: 'html',
+    // Number of parallel workers (CI = 1 to avoid race conditions)
+    workers: process.env.CI ? 1 : undefined,
 
-  use: {
-    // BASE_URL from .env — now page.goto('/backoffice/login') will automatically
-    // prepend this URL, so you don't hardcode the full URL anywhere!
-    baseURL: process.env.BASE_URL,
+    // ==================== TIMEOUT SETTINGS ====================
+    // Maximum time one test can run (60s) — useful for slow pages or API calls
+    // SELENIUM EQUIVALENT: @Test(timeOut = 60000) in TestNG
+    timeout: 60000,
 
-    // ==================== SCREENSHOT SETTINGS ====================
-    // 'off'           → No screenshots (default)
-    // 'on'            → Take screenshot after EVERY test (pass or fail)
-    // 'only-on-failure' → Take screenshot ONLY when a test fails (recommended)
-    screenshot: 'only-on-failure',
-
-    // ==================== VIDEO SETTINGS ====================
-    // 'off'              → No video (default)
-    // 'on'               → Record video for EVERY test
-    // 'retain-on-failure' → Record all, but DELETE videos of passed tests (recommended)
-    // 'on-first-retry'   → Record video only when retrying a failed test
-    video: 'retain-on-failure',
-
-    // ==================== TRACE SETTINGS ====================
-    // Trace = a detailed recording of everything (network, DOM, clicks, console logs)
-    // You can open it in Playwright Trace Viewer — very powerful for debugging!
-    // 'on-first-retry' → Collect trace only when retrying failed tests
-    trace: 'on-first-retry',
-  },
-
-  // Which browsers to test on
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+    expect: {
+        // Maximum time for expect() assertions to resolve (e.g. toBeVisible, toHaveURL)
+        // SELENIUM EQUIVALENT: WebDriverWait timeout
+        timeout: 10000,
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+    // ==================== REPORTER SETTINGS ====================
+    // List reporter = prints each test result live in terminal
+    // HTML reporter = generates a full report at playwright-report/index.html
+    // JUNIT reporter = for CI tools like Jenkins, GitHub Actions
+    //
+    // SELENIUM EQUIVALENT: TestNG listeners + ExtentReports / Allure
+    reporter: [
+        ['list'],
+        ['html', { open: 'never' }],
+        ['junit', { outputFile: 'test-results/results.xml' }],
+        ['json', { outputFile: 'test-results/results.json' }],
+    ],
+
+    use: {
+        // BASE_URL from .env — page.goto('/backoffice/login') auto-prepends this
+        baseURL: process.env.BASE_URL,
+
+        // Maximum time for each action (click, fill, etc.) to complete
+        // SELENIUM EQUIVALENT: implicit wait / explicit wait timeout
+        actionTimeout: 15000,
+
+        // Maximum time for navigation (page.goto, page.goBack, etc.)
+        navigationTimeout: 30000,
+
+        // ==================== SCREENSHOT SETTINGS ====================
+        // 'off'             → No screenshots
+        // 'on'              → Screenshot after EVERY test
+        // 'only-on-failure' → Screenshot ONLY on failure (recommended)
+        screenshot: 'only-on-failure',
+
+        // ==================== VIDEO SETTINGS ====================
+        // 'off'               → No video
+        // 'on'                → Record video for EVERY test
+        // 'retain-on-failure' → Record all, delete videos of passed tests (recommended)
+        // 'on-first-retry'    → Record only on retry
+        video: 'retain-on-failure',
+
+        // ==================== TRACE SETTINGS ====================
+        // Trace = detailed recording (network, DOM, clicks, console logs)
+        // Open with: npx playwright show-trace trace.zip
+        // 'on-first-retry' → Collect trace only when retrying failed tests
+        trace: 'on-first-retry',
+
+        // Locale for the browser (useful for date/currency formatting tests)
+        locale: 'en-IN',
+
+        // Timezone for the browser
+        timezoneId: 'Asia/Kolkata',
     },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-  ],
+    // ==================== BROWSER PROJECTS ====================
+    // SELENIUM EQUIVALENT: <browsers> section in TestNG.xml
+    projects: [
+        {
+            name: 'chromium',
+            use: { ...devices['Desktop Chrome'] },
+        },
+
+        {
+            name: 'firefox',
+            use: { ...devices['Desktop Firefox'] },
+        },
+
+        {
+            name: 'webkit',
+            use: { ...devices['Desktop Safari'] },
+        },
+
+        // Mobile browser — uncomment to enable
+        // {
+        //   name: 'Mobile Chrome',
+        //   use: { ...devices['Pixel 5'] },
+        // },
+    ],
+
+    // ==================== OUTPUT DIRECTORIES ====================
+    // Where to store test artifacts (screenshots, videos, traces)
+    outputDir: 'test-results/',
 });
